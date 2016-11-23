@@ -15,7 +15,7 @@
         android:layout_width="200sp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="57dp"
+        android:layout_marginBottom="67dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
 
@@ -23,10 +23,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView2"
-        android:src="@drawable/pucho2"
+        android:src="@drawable/puchoimage"
         android:alpha="1"
+        android:layout_marginBottom="97dp"
         android:layout_above="@+id/login_button"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="119dp" />
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

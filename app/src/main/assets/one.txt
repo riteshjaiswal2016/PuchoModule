@@ -1,3 +1,7 @@
-google
-phoogal
-sugal
+What is your Name?
+What is your Passion?
+In which College do you read?
+What is your CGPA?
+What is your Gender?
+How you look like?
+Who is your GirlFriend?
