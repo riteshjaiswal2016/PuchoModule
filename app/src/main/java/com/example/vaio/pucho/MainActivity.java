@@ -63,9 +63,6 @@ public class MainActivity extends AppCompatActivity {
     //Intermidiate variable used to store the Line of the document in assest
     //which should be poped when user sumbit the recorded audio file to server
 
-    String fullname = null, lastname = null;
-    //User's FB profile's full name and last name
-
     ImageView micSpeakerView;
     //mic and speaker pics used which pop when user click record or play button
 
@@ -91,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -100,21 +95,13 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
         //used to catch accidental disk or network access
         //on the application's main thread,
         //where UI operations are received and animations take place.
 
-        fullname = getIntent().getStringExtra("name");
-        lastname = getIntent().getStringExtra("lastname");
-        //fetch last and full name from intent
-
-        Log.i(TAG, " Name : " + fullname);
-
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.argb(119, 0, 62, 83)));
-        actionBar.setTitle(fullname);
+        actionBar.setTitle("Ask Me");
         actionBar.setDisplayShowHomeEnabled(true);
         actionBar.setDisplayUseLogoEnabled(true);
         actionBar.setLogo(R.drawable.puchoicon60);
@@ -349,142 +336,127 @@ public class MainActivity extends AppCompatActivity {
 
     //When submit button clicked
     public void submitClicked(View view) {
-        if (isInternetAvailable()) {
-            stopButton.setEnabled(false);
-            playButton.setEnabled(false);
-            rejectButton.setEnabled(false);
-            recordButton.setEnabled(false);
-            submitButton.setEnabled(false);
+        stopButton.setEnabled(false);
+        playButton.setEnabled(false);
+        rejectButton.setEnabled(false);
+        recordButton.setEnabled(false);
+        submitButton.setEnabled(false);
 
 
-            progressBar = new ProgressBar(this);
-            params.addRule(RelativeLayout.CENTER_IN_PARENT);
-            progressBar.setLayoutParams(params);
-            relative4.addView(progressBar);
-            //Show progress bar
+        progressBar = new ProgressBar(this);
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        progressBar.setLayoutParams(params);
+        relative4.addView(progressBar);
+        //Show progress bar
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-                    HttpURLConnection conn;
-                    DataOutputStream dos;
+                HttpURLConnection conn;
+                DataOutputStream dos;
 
-                    String lineEnd = "\r\n";
-                    String twoHyphens = "--";
-                    String boundary = "*****";
-                    //Used as header elements when we make http request
+                String lineEnd = "\r\n";
+                String twoHyphens = "--";
+                String boundary = "*****";
+                //Used as header elements when we make http request
 
-                    int bytesRead, bytesAvailable, bufferSize;
+                int bytesRead, bytesAvailable, bufferSize;
 
-                    byte[] buffer;
-                    //buffer to store record file as bytes array
+                byte[] buffer;
+                //buffer to store record file as bytes array
 
-                    int maxBufferSize = 1 * 1024 * 1024;
-                    //1 MB max size of record file
+                int maxBufferSize = 1 * 1024 * 1024;
+                //1 MB max size of record file
 
-                    String urlString = "http://puchoserver.96.lt/pucho.php";
-                    //Server's URL which php file
+                String urlString = "http://puchoserver.96.lt/pucho.php";
+                //Server's URL with configured php file
 
-                    try {
-                        FileInputStream fileInputStream = new FileInputStream(tempFile);
+                try {
+                    FileInputStream fileInputStream = new FileInputStream(tempFile);
 
-                        URL url = new URL(urlString);
-                        // open a URL connection to the Servlet
+                    URL url = new URL(urlString);
+                    // open a URL connection to the Servlet
 
-                        conn = (HttpURLConnection) url.openConnection();
-                        // Open a HTTP connection to the URL
+                    conn = (HttpURLConnection) url.openConnection();
+                    // Open a HTTP connection to the URL
 
-                        conn.setConnectTimeout(40 * 1000);
+                    conn.setConnectTimeout(40 * 1000);
 
-                        conn.setDoInput(true);
-                        // Allow Inputs
+                    conn.setDoInput(true);
+                    // Allow Inputs
 
-                        conn.setDoOutput(true);
-                        // Allow Outputs
+                    conn.setDoOutput(true);
+                    // Allow Outputs
 
-                        conn.setUseCaches(false);
-                        // Don't use a cached copy.
+                    conn.setUseCaches(false);
+                    // Don't use a cached copy.
 
-                        conn.setRequestMethod("POST");
-                        // Use a post method.
+                    conn.setRequestMethod("POST");
+                    // Use a post method.
 
-                        conn.setRequestProperty("Connection", "Keep-Alive");
-                        conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                        //Generate multipart encoded http request
+                    conn.setRequestProperty("Connection", "Keep-Alive");
+                    conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
+                    //Generate multipart encoded http request
 
-                        dos = new DataOutputStream(conn.getOutputStream());
+                    dos = new DataOutputStream(conn.getOutputStream());
 
-                        dos.writeBytes(twoHyphens + boundary + lineEnd);
-                        //write header element of http request to server
+                    dos.writeBytes(twoHyphens + boundary + lineEnd);
+                    //write header element of http request to server
 
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-                        String currentDateandTime = sdf.format(new Date());
-                        //Get current date time to rename the record file
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+                    String currentDateandTime = sdf.format(new Date());
+                    //Get current date time to rename the record file
 
-                        dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + lastname + currentDateandTime + ".mp3\"" + lineEnd);
-                        //Renamed the recorded file Like= "Sharma19801121_124013.mp3"
+                    dos.writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\"" + currentDateandTime + ".mp3\"" + lineEnd);
+                    //Renamed the recorded file Like= "Sharma19801121_124013.mp3"
 
-                        dos.writeBytes(lineEnd);
-                        //http request header end
+                    dos.writeBytes(lineEnd);
+                    //http request header end
 
-                        // create a buffer of maximum size
-                        bytesAvailable = fileInputStream.available();
-                        bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                        buffer = new byte[bufferSize];
+                    // create a buffer of maximum size
+                    bytesAvailable = fileInputStream.available();
+                    bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                    buffer = new byte[bufferSize];
 
-                        bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                    bytesRead = fileInputStream.read(buffer, 0, bufferSize);
 
-                        dos.write(buffer);
-                        //write the file to server
+                    dos.write(buffer);
+                    //write the file to server
 
-                        dos.writeBytes(lineEnd);
+                    dos.writeBytes(lineEnd);
 
-                        dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-                        //http request end
+                    dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+                    //http request end
 
-                        Log.i(TAG, "Bytes Read : " + bytesRead);
-                        int res = conn.getResponseCode();
+                    Log.i(TAG, "Bytes Read : " + bytesRead);
+                    int res = conn.getResponseCode();
 
-                        Message message = Message.obtain();
-                        message.arg1 = res;
-                        message.obj = progressBar;
-                        handler.sendMessage(message);
-                        //Sendig response code to handler to change UI accordingly
+                    Message message = Message.obtain();
+                    message.arg1 = res;
+                    message.obj = progressBar;
+                    handler.sendMessage(message);
+                    //Sendig response code to handler to change UI accordingly
 
-                        fileInputStream.close();
-                        dos.flush();
-                        dos.close();
+                    fileInputStream.close();
+                    dos.flush();
+                    dos.close();
 
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (ProtocolException e) {
-                        e.printStackTrace();
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (ProtocolException e) {
+                    e.printStackTrace();
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            }).start();
-        }
 
-        else
-            Toast.makeText(MainActivity.this,"No Internet Connection!",Toast.LENGTH_SHORT).show();
 
+            }
+        }).start();
     }
 
-    public boolean isInternetAvailable() {
-                try {
-                    InetAddress ipAddr = InetAddress.getByName("www.google.com");
-                    return !ipAddr.equals("");
-
-                } catch (Exception e) {
-                    return false;
-                }
-            }
 
 
 }

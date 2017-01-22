@@ -35,7 +35,7 @@ public class SplashScreen extends Activity {
                     Thread.sleep(2000);
                     //Wait 2 sec to display the splash
 
-                    startActivity(new Intent(SplashScreen.this,FBLogin.class));
+                    startActivity(new Intent(SplashScreen.this,MainActivity.class));
 
                     finish();
 
